@@ -3,7 +3,7 @@
 // @namespace       teddit_gamedeals
 // @description     r/GameDeals Highlighter
 // @version         2.1
-// @include					https://teddit.net/r/gamedeals/*
+// @include         https://teddit.net/r/gamedeals/*
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 // ==/UserScript==
 

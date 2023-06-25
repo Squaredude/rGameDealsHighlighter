@@ -65,6 +65,7 @@ titles.each(function(idx, item) {
                 if(re.test(title)) {
                     var re = new RegExp("(?:\\(Free|100\\%)", "i");
                         if(re.test(title) || aGameStores[i] == "Prime Gaming") {
+                          /* we check "Prime Gaming" because it's a special case */
                             $title.css("color", "#0c0");
                             return;
                         }

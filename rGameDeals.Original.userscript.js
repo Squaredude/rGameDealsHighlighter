@@ -2,73 +2,89 @@
 // @name            r/GameDeals Highlighter
 // @namespace       reddit_gamedeals
 // @description     r/GameDeals Highlighter
-// @version         2.1
-// @include         https://*.reddit.com/r/gamedeals/*
+// @version         2.1.1
+// @include         https://old.reddit.com/r/gamedeals/*
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 // ==/UserScript==
 
-var aGameStores = [
-    // site:epicgames.com OR title:epicgamestore OR title:"epic game store" OR title:"EGS" OR title:"epic games"
+const hasPrime = true; // set true or false if you have/don't have a Prime subscription
+
+const TITLE_COLOR_DEFAULT = "#888";
+const TITLE_COLOR_FREEBIE = "#0c0";
+const TITLE_COLOR_DISCOUNT = "#cc0";
+
+/*
+    the following are the stores I follow, you might have more, you might have fewer,
+    I recommend using one line per store and regular expressions (you can do a simple OR with the | symbol)
+*/
+const aGameStores = [
+    // Epic Games Store
     'Epic(?: (?:Store|Game(?:s)?(?: Store)?))?|EGS',
 
-    // site:steampowered.com
+    // Steam
     'Steam',
 
-    // site:gog.com OR title:gog OR title:"good old games"
+    // GOG
     'GOG',
 
-    // site:amazon. OR title:Amazon
+    // Amazon (non-Prime)
     'Amazon',
   
   	// Amazon Prime Gaming
   	'Prime Gaming',
 
-    // site:ubisoft.com OR site:store.ubi.com OR title:ubisoft OR title:uplay
+    // Ubisoft
     'Ubisoft(?: Store)?|Uplay',
 
-    // site:humblebundle.com OR title:humble
+    // Humble Bundle
     'Humble(?: (?:Store|Bundle))?',
 
-    // site:(microsoft.com OR microsoftstore.com)
+    // Microsoft / XBox
     'Microsoft(?: Store)?',
 
-    // site:sonyentertainmentnetwork.com OR site:playstation.com
+    // Playstation
     'PS4|PS Store|PSN|Play(?: )?Station(?:(?: )?Store)?'
 ];
 
-var negFlairs = [
+const negFlairs = [
   "Expired",
   '(?:US|UK|DE) Only',
   "Console"
 ];
-  
+
+// find all posts
 $("div.entry p.title").each(function(idx, item) {
-    var $title = $(item).find("a.title");
-    var title = $title.html();
-    var $flair = $(item).find(".flair");
-    var flair = $flair.html();
-        if(title[0] != '[') { /* post title must begin with a [ */
+    var $title = $(item).find("a.title"); // find the link/title
+    var title = $title.html(); // get the title text
+    var $flair = $(item).find(".flair"); // find the flair
+    var flair = $flair.html(); // get flair text
+        if(title[0] != '[') { /* post title must begin with a [, otherwise go to next item */
             return;
         }
-    $title.css("color", "#888");
+    $title.css("color", TITLE_COLOR_DEFAULT); // set default color, the idea is to tone down titles so they don't stand out
         if($flair.length > 0) {
+            // loop through undesirable flairs (such as "Expired"), and skip this item if found
             for(var i = 0; i < negFlairs.length; i++) {
                 var re = new RegExp("^(?:" + negFlairs[i] + ")", "i");
                   if(re.test(flair)) {
-                    return;
+                    return; // found undesirable flair, skip item
                   }
             }
         }
-        for(var i = 0; i < aGameStores.length; i++) {
-            var re = new RegExp("^\\[(?:" + aGameStores[i] + ")\\]", "i");
+        for(var i = 0; i < aGameStores.length; i++) { // loop through my game stores
+            var re = new RegExp("^\\[(?:" + aGameStores[i] + ")\\]", "i"); // use my regular expressions
                 if(re.test(title)) {
-                    var re = new RegExp("(?:\\(Free|100\\%)", "i");
-                        if(re.test(title) || aGameStores[i] == "Prime Gaming") {
-                          /* we check "Prime Gaming" because it's a special case */
-                            $title.css("color", "#0c0");
+                    var re = new RegExp("(?:\\(Free|100\\%)", "i"); // check if there's a freebie
+                        /*
+                            Prime Gaming is a special case, since freebies depend on me having a subscription,
+                            therefore, now we have a user-set flag to check if one is entitled to the freebie
+                            if the flag is set to false, the match is treated as a "discount"
+                        */
+                        if(re.test(title) || (aGameStores[i] == "Prime Gaming" && hasPrime == true)) {
+                            $title.css("color", TITLE_COLOR_FREEBIE);
                             return;
                         }
-                    $title.css("color", "#cc0");
+                    $title.css("color", TITLE_COLOR_DISCOUNT);
                     return;
                 }
         }

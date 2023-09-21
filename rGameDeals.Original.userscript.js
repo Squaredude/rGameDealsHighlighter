@@ -2,7 +2,7 @@
 // @name            r/GameDeals Highlighter
 // @namespace       reddit_gamedeals
 // @description     r/GameDeals Highlighter
-// @version         2.0
+// @version         2.1
 // @include         https://*.reddit.com/r/gamedeals/*
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 // ==/UserScript==
@@ -42,13 +42,12 @@ var negFlairs = [
   "Console"
 ];
   
-var titles = $('p.title');
-titles.each(function(idx, item) {
-    var $title = $(item).find("a");
+$("div.entry p.title").each(function(idx, item) {
+    var $title = $(item).find("a.title");
     var title = $title.html();
-    var $flair = $(item).find("span.linkflairlabel");
+    var $flair = $(item).find(".flair");
     var flair = $flair.html();
-        if(title[0] != '[') {
+        if(title[0] != '[') { /* post title must begin with a [ */
             return;
         }
     $title.css("color", "#888");

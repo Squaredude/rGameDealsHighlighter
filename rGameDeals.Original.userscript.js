@@ -2,12 +2,12 @@
 // @name            r/GameDeals Highlighter
 // @namespace       reddit_gamedeals
 // @description     r/GameDeals Highlighter
-// @version         2.1.1
+// @version         2.1.2
 // @include         https://old.reddit.com/r/gamedeals/*
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 // ==/UserScript==
 
-const hasPrime = true; // set true or false if you have/don't have a Prime subscription
+const hasPrime = false; // set true or false if you have/don't have a Prime subscription
 
 const TITLE_COLOR_DEFAULT = "#888";
 const TITLE_COLOR_FREEBIE = "#0c0";
@@ -29,7 +29,7 @@ const aGameStores = [
 
     // Amazon (non-Prime)
     'Amazon',
-  
+
   	// Amazon Prime Gaming
   	'Prime Gaming',
 
@@ -56,25 +56,27 @@ const negFlairs = [
 $("div.entry p.title").each(function(idx, item) {
     var $title = $(item).find("a.title"); // find the link/title
     var title = $title.html(); // get the title text
-    var $flair = $(item).find(".flair"); // find the flair
+    var $flair = $(item).find(".linkflairlabel"); // find the flair
     var flair = $flair.html(); // get flair text
+    var i = 0;
+    var re = null;
         if(title[0] != '[') { /* post title must begin with a [, otherwise go to next item */
             return;
         }
     $title.css("color", TITLE_COLOR_DEFAULT); // set default color, the idea is to tone down titles so they don't stand out
         if($flair.length > 0) {
             // loop through undesirable flairs (such as "Expired"), and skip this item if found
-            for(var i = 0; i < negFlairs.length; i++) {
-                var re = new RegExp("^(?:" + negFlairs[i] + ")", "i");
+            for(i = 0; i < negFlairs.length; i++) {
+                re = new RegExp("^(?:" + negFlairs[i] + ")", "i");
                   if(re.test(flair)) {
                     return; // found undesirable flair, skip item
                   }
             }
         }
-        for(var i = 0; i < aGameStores.length; i++) { // loop through my game stores
-            var re = new RegExp("^\\[(?:" + aGameStores[i] + ")\\]", "i"); // use my regular expressions
+        for(i = 0; i < aGameStores.length; i++) { // loop through my game stores
+            re = new RegExp("^\\[(?:" + aGameStores[i] + ")\\]", "i"); // use my regular expressions
                 if(re.test(title)) {
-                    var re = new RegExp("(?:\\(Free|100\\%)", "i"); // check if there's a freebie
+                    re = new RegExp("(?:\\(Free|100\\%)", "i"); // check if there's a freebie
                         /*
                             Prime Gaming is a special case, since freebies depend on me having a subscription,
                             therefore, now we have a user-set flag to check if one is entitled to the freebie

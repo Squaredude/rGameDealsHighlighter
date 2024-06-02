@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name            r/GameDeals Highlighter
+// @name            rGameDeals Highlighter
 // @namespace       reddit_gamedeals
 // @description     r/GameDeals Highlighter
-// @version         2.1.2
+// @version         2.1.3
 // @include         https://old.reddit.com/r/gamedeals/*
 // @require         https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 // ==/UserScript==
